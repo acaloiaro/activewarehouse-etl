@@ -1,3 +1,5 @@
+require 'parallel'
+
 module ETL #:nodoc:
   module Batch
     class Context
@@ -86,7 +88,7 @@ module ETL #:nodoc:
       def execute
         engine.say "Executing batch"
         before_execute
-        directives.each do |directive|
+        Parallel.each(directives, :in_processes => 8) do |directive|
           directive.execute
         end
         engine.say "Finishing batch"
